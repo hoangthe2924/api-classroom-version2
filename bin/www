@@ -1,0 +1,144 @@
+#!/usr/bin/env node
+
+/**
+ * Module dependencies.
+ */
+
+var app = require("../app");
+var debug = require("debug")("classroom-api:server");
+var http = require("http");
+const { addUser, removeUser, findOnlineStudents, findOnlineTeachers, findOnlineStudentById } = require("../user");
+const { Socket } = require("socket.io");
+
+/**
+ * Get port from environment and store in Express.
+ */
+
+var port = normalizePort(process.env.PORT || "7000");
+app.set("port", port);
+/**
+ * Create HTTP server.
+ */
+
+var server = http.createServer(app);
+var io = require('socket.io')(server, {
+  cors: {
+    origin: "http://localhost:3000",
+    methods: ["GET", "POST"]
+  }
+});
+
+/**
+ * Listen on provided port, on all network interfaces.
+ */
+
+server.listen(port);
+server.on("error", onError);
+server.on("listening", onListening);
+
+io.on('connection', (socket) => { /* socket object may be used to send specific messages to the new connected client */
+  socket.on('join notification', (token) => {
+    addUser({ socketId: socket.id, token });
+  });
+
+  socket.on('logout', () => {
+    removeUser(socket.id)
+  });
+
+  socket.on('finalize grade', async (classId) => {
+    const onlineUsers = await findOnlineStudents(classId);
+    console.log('????');
+    console.log(onlineUsers);
+    onlineUsers.forEach(user => {
+      console.log(user);
+      io.to(user.socketId).emit('new notification');
+    });
+  });
+  socket.on('grade review request', async (classId) => {
+    const onlineUsers = await findOnlineTeachers(classId);
+    console.log('????');
+    console.log(onlineUsers);
+    onlineUsers.forEach(user => {
+      console.log(user);
+      io.to(user.socketId).emit('new notification');
+    });
+  });
+  socket.on('grade review reply', async (studentId) => {
+    const onlineUsers = await findOnlineStudentById(studentId);
+    console.log('????');
+    console.log(onlineUsers);
+    onlineUsers.forEach(user => {
+      console.log(user);
+      if (user.socketId!= socket.id)
+      {
+        io.to(user.socketId).emit('new notification');
+      }
+    });
+  });
+
+  socket.on('grade review final', async (studentId) => {
+    const onlineUsers = await findOnlineStudentById(studentId);
+    console.log('????');
+    console.log(onlineUsers);
+    onlineUsers.forEach(user => {
+      console.log(user);
+      io.to(user.socketId).emit('new notification');
+    });
+  });
+});
+
+/**
+ * Normalize a port into a number, string, or false.
+ */
+
+function normalizePort(val) {
+  var port = parseInt(val, 10);
+
+  if (isNaN(port)) {
+    // named pipe
+    return val;
+  }
+
+  if (port >= 0) {
+    // port number
+    return port;
+  }
+
+  return false;
+}
+
+/**
+ * Event listener for HTTP server "error" event.
+ */
+
+function onError(error) {
+  if (error.syscall !== "listen") {
+    throw error;
+  }
+
+  var bind = typeof port === "string" ? "Pipe " + port : "Port " + port;
+
+  // handle specific listen errors with friendly messages
+  switch (error.code) {
+    case "EACCES":
+      console.error(bind + " requires elevated privileges");
+      process.exit(1);
+      break;
+    case "EADDRINUSE":
+      console.error(bind + " is already in use");
+      process.exit(1);
+      break;
+    default:
+      throw error;
+  }
+}
+
+/**
+ * Event listener for HTTP server "listening" event.
+ */
+
+function onListening() {
+  var addr = server.address();
+  var bind = typeof addr === "string" ? "pipe " + addr : "port " + addr.port;
+  debug("Listening on " + bind);
+}
