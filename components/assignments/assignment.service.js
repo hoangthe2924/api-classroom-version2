@@ -135,9 +135,12 @@ module.exports = {
 
     async getAssignmentById(assignmentId){
         try {
-            const rs = await Assignment.findByPk(assignmentId);
-            // console.log(rs instanceof Assignment, rs.id);
-            // console.log(rs.dataValues);
+            const rs = await Assignment.findOne({where: {id: assignmentId},
+            include: [{
+                model: Class,
+                as: "class",
+                attributes: ["className"],
+            }]});
             return rs;
         } catch (error) {
             console.log(error);

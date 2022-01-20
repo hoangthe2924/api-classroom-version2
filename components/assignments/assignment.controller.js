@@ -10,7 +10,6 @@ const driveClientSecret = process.env.GOOGLE_DRIVE_CLIENT_SECRET || '';
 const driveRedirectUri = process.env.GOOGLE_DRIVE_REDIRECT_URI || '';
 const driveRefreshToken = process.env.GOOGLE_DRIVE_REFRESH_TOKEN || '';
 
-
 exports.updateAssignment = async (req, res) => {
     // const classId = req.params.classID;
     const assignment = {
@@ -135,7 +134,7 @@ exports.postFileToGoogleDrive = async (req, res) => {
         const finalPath = path.resolve(__dirname, '../../public/uploads/' + fileName);
         // console.log(finalPath);
 
-        const folderName = String(assignmentResult.dataValues.classId) + '_' + String(assignmentId);
+        const folderName = String(assignmentResult.class.dataValues.className) + '_' + String(assignmentResult.dataValues.title);
         try {
             if (!fs.existsSync(finalPath)) {
                 throw new Error('File not found!');
