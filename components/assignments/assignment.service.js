@@ -66,6 +66,40 @@ module.exports = {
         }
     },
 
+    async getListAssignmentForStudent(classID, studentId) {
+        try {
+            let allAssignment = await Assignment.findAll({
+                where: { classId: classID },
+                order: [["order", "ASC"]],
+                attributes: ["id", "title", "point", "order"],
+            });
+
+            const allSubmitedAssignments = await AssignmetDetail.findAll({
+                attributes: ["id", "assignmentId"],
+                where: {creatorId : studentId}
+            });
+
+            let temp;
+            for (let i = 0; i < allAssignment.length; i++){
+                temp = this.checkIsSubmit(allAssignment[i].dataValues.id, allSubmitedAssignments);
+                allAssignment[i].dataValues.isDone = temp;
+            }
+            return allAssignment;
+
+        } catch (error) {
+            console.log(error);
+            return false;
+        }
+    },
+
+    checkIsSubmit(assignmentid, allSubmitedAssignments){
+        for (let i = 0; i < allSubmitedAssignments.length; i++){
+            if (allSubmitedAssignments[i].dataValues.assignmentId === assignmentid)
+                return true;
+        }
+        return false;
+    },
+
     async updateAssignmentOrder(classID, assignments) {
         try {
             for (let assignment of assignments) {
@@ -83,9 +117,6 @@ module.exports = {
 
     async saveFileInfo(creatorId, assignmentId, fileInfo) {
         try {
-            const assginment_temp = await Assignment.findByPk(assignmentId)
-            if (!assginment_temp)
-                return false;
             const data = {
                 ...fileInfo,
                 "assignmentId": assignmentId,
@@ -100,6 +131,17 @@ module.exports = {
             console.log(error);
             return false;
         }
+    },
 
+    async getAssignmentById(assignmentId){
+        try {
+            const rs = await Assignment.findByPk(assignmentId);
+            // console.log(rs instanceof Assignment, rs.id);
+            // console.log(rs.dataValues);
+            return rs;
+        } catch (error) {
+            console.log(error);
+            return false;            
+        }
     }
 }

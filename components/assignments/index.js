@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const assignmentController = require("./assignment.controller");
 const authTeacher = require("../../middleware/teacher.mdw");
+const authStudent = require("../../middleware/student.mdw");
 const multer = require('multer');
 
 // SET STORAGE
@@ -46,7 +47,12 @@ router.get(
   authTeacher,
   assignmentController.getListAssignment
 );
-
-router.post("/:assignmentID", upload.single('file'), assignmentController.postFileToGoogleDrive);
+router.get("/students",
+    authStudent,
+    assignmentController.getListAssignmentForStudent
+)
+router.post("/:assignmentID", 
+    upload.single('file'), 
+    assignmentController.postFileToGoogleDrive);
 
 module.exports = router;
