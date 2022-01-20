@@ -42,6 +42,29 @@ db.resetPasswordToken = require("./resetPasswordToken.model.js")(
   Sequelize
 );
 
+// start mew feature
+db.assignment_detail = require('./assignment_detail.model')(
+    sequelize,
+    Sequelize
+  );
+db.assignment_detail.belongsTo(db.assignment, {
+    foreignKey: "assignmentId",
+    as: "assignments",
+});
+db.assignment.hasMany(db.assignment_detail, {
+    foreignKey: "assignmentId",
+});
+
+db.assignment_detail.belongsTo(db.user, {
+    foreignKey: "creatorId",
+    as: "creator",
+});
+db.user.hasMany(db.assignment_detail, {
+    foreignKey: "creatorId",    
+});
+// end new feature
+
+
 db.class.belongsTo(db.user, { foreignKey: "ownerId", as: "owner" });
 db.user.hasMany(db.class, { foreignKey: "ownerId", as: "classesOwned" });
 

@@ -1,0 +1,9 @@
+host: us-cdbr-east-05.cleardb.net
+username: be2c0368654c61
+password: 2103784e
+databse: heroku_39769d67ffaaf01
+
+account to test:
+username: hoangthe2924
+password: 123456987
+

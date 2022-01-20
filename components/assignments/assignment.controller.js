@@ -92,52 +92,56 @@ exports.postFileToGoogleDrive = async (req, res) => {
     const fileName = file.originalname;
     console.log(file);
     if (!file) {
-        res.status(400).json({ message: 'Please upload a file'});
+        return res.status(400).json({ message: 'Please upload a file'});
     }
     
     /** save to database
      */
     const assignmentId = req.params.assignmentID;
     const creatorId = req.user.id; //req.user.id
-    
-    // check is assignment exist
-    // ...
+    const fileInfo = {
+        "fileName": fileName,
+    };
 
     // save into assignment_detail
     // ...
+    const result = await assignmentService.saveFileInfo(creatorId, assignmentId, fileInfo);
+    if (!result){
+        return res.status(500).json({ message: "Can not upload file!" });
+    }
 
 
-    await (async () => {
-        const googleDriveService = new GoogleDriveService(driveClientId, driveClientSecret, driveRedirectUri, driveRefreshToken);
-        const finalPath = path.resolve(__dirname, '../../public/uploads/' + fileName);
-        // console.log(finalPath);
+    // await (async () => {
+    //     const googleDriveService = new GoogleDriveService(driveClientId, driveClientSecret, driveRedirectUri, driveRefreshToken);
+    //     const finalPath = path.resolve(__dirname, '../../public/uploads/' + fileName);
+    //     // console.log(finalPath);
 
-        const folderName = 'Picture';
-        try {
-          if (!fs.existsSync(finalPath)) {
-            throw new Error('File not found!');
-        }
-        let folder = await googleDriveService.searchFolder(folderName);
-        console.log(folder);
+    //     const folderName = 'Picture';
+    //     try {
+    //       if (!fs.existsSync(finalPath)) {
+    //         throw new Error('File not found!');
+    //     }
+    //     let folder = await googleDriveService.searchFolder(folderName);
+    //     console.log(folder);
 
-        if(!folder){
-          const res = await googleDriveService.createFolder(folderName);
-          folder = res.data;
-        }
-        console.log(folder);
+    //     if(!folder){
+    //       const res = await googleDriveService.createFolder(folderName);
+    //       folder = res.data;
+    //     }
+    //     console.log(folder);
 
-        await googleDriveService.saveFile(fileName, finalPath, 'application/octet-stream', folder.id);
+    //     await googleDriveService.saveFile(fileName, finalPath, 'application/octet-stream', folder.id);
 
-        console.info('File uploaded successfully!');
-        // Delete the file on the server
-        fs.unlinkSync(finalPath);
+    //     console.info('File uploaded successfully!');
+    //     // Delete the file on the server
+    //     fs.unlinkSync(finalPath);
 
-        } catch (error) {
-          console.log(error);
-          res.status(500).json({ message: error });
-        }
-    })();
+    //     } catch (error) {
+    //       console.log(error);
+    //       res.status(500).json({ message: error });
+    //     }
+    // })();
 
-    res.status(200)
+    return res.status(200)
         .json({ message: "Upload assignment successfully!" });
 };
