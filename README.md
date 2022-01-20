@@ -17,4 +17,4 @@ You will also see any lint errors in the console.
 
 ### IN THE DEVELOPMENT MODE: `npm run dev`
 
-It works the same as `npm start`, but whenever you save your code, the project is automately rebuild thanks to Nodemon library.
+It works the same as `npm start`, but whenever you save your code, the project is automately rebuild thank to "Nodemon" library.
