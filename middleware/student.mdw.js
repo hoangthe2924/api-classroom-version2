@@ -2,7 +2,7 @@ const classService = require("../components/classes/class.service");
 
 module.exports = async function authTeacher(req, res, next) {
   try {
-    const classID = req.body.classID || req.params.classID || req.query.classID    
+    const classID = req.body.classId || req.params.classIs || req.query.classId
     const isInClassAsTeacher =
       (await classService.checkIfUserIsTeacher(req.user.id, classID)) ||
       req.user.isAdmin;

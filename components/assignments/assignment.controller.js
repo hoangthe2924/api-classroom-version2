@@ -53,7 +53,7 @@ exports.getListAssignment = async (req, res) => {
 
 //development
 exports.getListAssignmentForStudent = async (req, res) => {
-    const classId = req.query.classID;
+    const classId = req.query.classId;
     const studentId = req.user.id; //req.user.id
     
     const result = await assignmentService.getListAssignmentForStudent(classId, studentId);
