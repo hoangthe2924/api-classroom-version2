@@ -49,6 +49,19 @@ exports.getListAssignment = async (req, res) => {
   }
 };
 
+
+//development
+exports.getListAssignmentForStudent = async (req, res) => {
+  const classId = req.query.classID;
+
+  const result = await assignmentService.getListAssignment(classId);
+  if (result) {
+    res.status(200).json(result);
+  } else {
+    res.status(500).json({ message: "Cannot get list assignments of class!" });
+  }
+};
+
 exports.updateAssignmentOrder = async (req, res) => {
   const classID = req.body.classID;
   const newListAssignment = req.body.listAssignment;
@@ -88,7 +101,7 @@ exports.createAssignment = async (req, res) => {
   };
 
 exports.postFileToGoogleDrive = async (req, res) => {
-    const file = req.file
+    const file = req.file;
     const fileName = file.originalname;
     console.log(file);
     if (!file) {

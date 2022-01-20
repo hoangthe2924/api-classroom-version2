@@ -47,6 +47,6 @@ router.get(
   assignmentController.getListAssignment
 );
 
-router.post("/:assignmentID", upload.single('myFile'), assignmentController.postFileToGoogleDrive);
+router.post("/:assignmentID", upload.single('file'), assignmentController.postFileToGoogleDrive);
 
 module.exports = router;
