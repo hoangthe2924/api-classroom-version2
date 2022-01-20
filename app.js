@@ -18,6 +18,7 @@ const indexRouter = require("./routes/index");
 const classesRouter = require("./components/classes/index");
 const usersRouter = require("./components/users/index");
 const gradesRouter = require("./components/grades/index");
+const assignmentRouter = require("./components/assignments/index");
 const app = express();
 
 // view engine setup
@@ -38,33 +39,33 @@ const driveClientSecret = process.env.GOOGLE_DRIVE_CLIENT_SECRET || '';
 const driveRedirectUri = process.env.GOOGLE_DRIVE_REDIRECT_URI || '';
 const driveRefreshToken = process.env.GOOGLE_DRIVE_REFRESH_TOKEN || '';
 
-(async () => {
-    const googleDriveService = new GoogleDriveService(driveClientId, driveClientSecret, driveRedirectUri, driveRefreshToken);
-    const finalPath = path.resolve(__dirname, './spacex-uj3hvdfQujI-unsplash.jpg');
-    const folderName = 'Picture';
-    try {
-      if (!fs.existsSync(finalPath)) {
-        throw new Error('File not found!');
-    }
-    let folder = await googleDriveService.searchFolder(folderName);
-    console.log(folder);
+// (async () => {
+//     const googleDriveService = new GoogleDriveService(driveClientId, driveClientSecret, driveRedirectUri, driveRefreshToken);
+//     const finalPath = path.resolve(__dirname, './spacex-uj3hvdfQujI-unsplash.jpg');
+//     const folderName = 'Picture';
+//     try {
+//       if (!fs.existsSync(finalPath)) {
+//         throw new Error('File not found!');
+//     }
+//     let folder = await googleDriveService.searchFolder(folderName);
+//     console.log(folder);
 
-    if(!folder){
-      const res = await googleDriveService.createFolder(folderName);
-      folder = res.data;
-    }
-    console.log(folder);
+//     if(!folder){
+//       const res = await googleDriveService.createFolder(folderName);
+//       folder = res.data;
+//     }
+//     console.log(folder);
 
-    await googleDriveService.saveFile('UseZipRarInstead', finalPath, 'image/jpg', folder.id);
+//     await googleDriveService.saveFile('UseZipRarInstead', finalPath, 'image/jpg', folder.id);
 
-    console.info('File uploaded successfully!');
-    // Delete the file on the server
-    fs.unlinkSync(finalPath);
+//     console.info('File uploaded successfully!');
+//     // Delete the file on the server
+//     fs.unlinkSync(finalPath);
     
-    } catch (error) {
-      console.log(error);
-    }
-})();
+//     } catch (error) {
+//       console.log(error);
+//     }
+// })();
 
 
 app.use("/", indexRouter);
@@ -78,6 +79,11 @@ app.use(
   "/grades",
   passport.authenticate("jwt", { session: false }),
   gradesRouter
+);
+app.use(
+  "/assignments",
+  passport.authenticate("jwt", { session: false }),
+  assignmentRouter
 );
 
 // // catch 404 and forward to error handler

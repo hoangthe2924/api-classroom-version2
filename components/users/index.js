@@ -74,7 +74,7 @@ router.get(
   passport.authenticate("jwt", { session: false }),
   function (req, res, next) {
     const userInfo = req.user;
-    console.log("ui", JSON.stringify(userInfo));
+    //console.log("ui", JSON.stringify(userInfo));
     return res.status(200).send(userInfo);
   }
 );

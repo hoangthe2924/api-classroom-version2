@@ -11,36 +11,6 @@ router.post("/people/invite", authTeacher, classController.invitePeople);
 
 router.post("/available/:cjc", classController.checkAvailableClass);
 
-router.post(
-  "/:classID/assignments",
-  authTeacher,
-  classController.createAssignment
-);
-
-router.put(
-  "/:classID/assignments",
-  authTeacher,
-  classController.updateAssignment
-);
-
-router.put(
-  "/:classID/assignments/order",
-  authTeacher,
-  classController.updateAssignmentOrder
-);
-
-router.delete(
-  "/:classID/assignments/:assignmentID",
-  authTeacher,
-  classController.deleteAssignment
-);
-
-router.get(
-  "/:classID/assignments",
-  authTeacher,
-  classController.getListAssignment
-);
-
 router.put(
   "/:classID/studentList",
   authTeacher,

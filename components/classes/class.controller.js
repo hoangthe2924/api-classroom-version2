@@ -345,27 +345,6 @@ exports.addUser = (req, res) => {
     });
 };
 
-exports.createAssignment = async (req, res) => {
-  const userID = req.user.id; //req.user.id
-  const classID = req.params.classID;
-  const newAssignment = {
-    title: req.body.title,
-    point: req.body.point,
-    order: req.body.order,
-  };
-
-  const result = await classService.addNewAssignment(
-    userID,
-    classID,
-    newAssignment
-  );
-  if (result) {
-    res.status(201).json(result);
-  } else {
-    res.status(500).json({ message: "Cannot create new assignment!" });
-  }
-};
-
 exports.checkAvailableClass = async (req, res) => {
   const cjc = req.params.cjc;
   const userId = req.user.id;
@@ -413,61 +392,5 @@ exports.getStudentList = async (req, res) => {
     res.status(500).json({
       message: "Cannot get student list of class id: " + classID + "!",
     });
-  }
-};
-
-exports.updateAssignment = async (req, res) => {
-  // const classId = req.params.classID;
-  const assignment = {
-    id: req.body.id,
-    title: req.body.title,
-    point: req.body.point,
-  };
-
-  const result = await classService.updateAssignment(assignment);
-  if (result) {
-    res.status(200).json(result);
-  } else {
-    res.status(500).json({ message: "Cannot edit assignment!" });
-  }
-};
-
-exports.deleteAssignment = async (req, res) => {
-  const assignmentId = req.params.assignmentID;
-  const classId = req.params.classID;
-
-  const result = await classService.deleteAssignment(classId, assignmentId);
-  if (result) {
-    res.status(200).json({ message: "Delete successfully!" });
-  } else {
-    res.status(500).json({ message: "Cannot delete assignments!" });
-  }
-};
-
-exports.getListAssignment = async (req, res) => {
-  const classId = req.params.classID;
-
-  const result = await classService.getListAssignment(classId);
-  if (result) {
-    res.status(200).json(result);
-  } else {
-    res.status(500).json({ message: "Cannot get list assignments of class!" });
-  }
-};
-
-exports.updateAssignmentOrder = async (req, res) => {
-  const classID = req.params.classID;
-  const newListAssignment = req.body.listAssignment;
-
-  const result = await classService.updateAssignmentOrder(
-    classID,
-    newListAssignment
-  );
-  if (result) {
-    res
-      .status(200)
-      .json({ message: "Update order of assignments successfully!" });
-  } else {
-    res.status(500).json({ message: "Cannot Update order of assignments!" });
   }
 };
