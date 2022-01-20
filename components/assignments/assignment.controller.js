@@ -1,4 +1,14 @@
 const assignmentService = require("./assignment.service");
+const { GoogleDriveService } = require('../../googleDriveService');
+const path = require("path");
+const fs = require("fs");
+
+
+const driveClientId = process.env.GOOGLE_DRIVE_CLIENT_ID || '';
+const driveClientSecret = process.env.GOOGLE_DRIVE_CLIENT_SECRET || '';
+const driveRedirectUri = process.env.GOOGLE_DRIVE_REDIRECT_URI || '';
+const driveRefreshToken = process.env.GOOGLE_DRIVE_REFRESH_TOKEN || '';
+
 
 exports.updateAssignment = async (req, res) => {
   // const classId = req.params.classID;
@@ -76,3 +86,58 @@ exports.createAssignment = async (req, res) => {
       res.status(500).json({ message: "Cannot create new assignment!" });
     }
   };
+
+exports.postFileToGoogleDrive = async (req, res) => {
+    const file = req.file
+    const fileName = file.originalname;
+    console.log(file);
+    if (!file) {
+        res.status(400).json({ message: 'Please upload a file'});
+    }
+    
+    /** save to database
+     */
+    const assignmentId = req.params.assignmentID;
+    const creatorId = req.user.id; //req.user.id
+    
+    // check is assignment exist
+    // ...
+
+    // save into assignment_detail
+    // ...
+
+
+    await (async () => {
+        const googleDriveService = new GoogleDriveService(driveClientId, driveClientSecret, driveRedirectUri, driveRefreshToken);
+        const finalPath = path.resolve(__dirname, '../../public/uploads/' + fileName);
+        // console.log(finalPath);
+
+        const folderName = 'Picture';
+        try {
+          if (!fs.existsSync(finalPath)) {
+            throw new Error('File not found!');
+        }
+        let folder = await googleDriveService.searchFolder(folderName);
+        console.log(folder);
+
+        if(!folder){
+          const res = await googleDriveService.createFolder(folderName);
+          folder = res.data;
+        }
+        console.log(folder);
+
+        await googleDriveService.saveFile(fileName, finalPath, 'application/octet-stream', folder.id);
+
+        console.info('File uploaded successfully!');
+        // Delete the file on the server
+        fs.unlinkSync(finalPath);
+
+        } catch (error) {
+          console.log(error);
+          res.status(500).json({ message: error });
+        }
+    })();
+
+    res.status(200)
+        .json({ message: "Upload assignment successfully!" });
+};
