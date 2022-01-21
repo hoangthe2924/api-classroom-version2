@@ -1,14 +1,6 @@
 const assignmentService = require("./assignment.service");
-const { GoogleDriveService } = require('../../googleDriveService');
-const path = require("path");
-const fs = require("fs");
-const db = require("../../models");
-
-
-const driveClientId = process.env.GOOGLE_DRIVE_CLIENT_ID || '';
-const driveClientSecret = process.env.GOOGLE_DRIVE_CLIENT_SECRET || '';
-const driveRedirectUri = process.env.GOOGLE_DRIVE_REDIRECT_URI || '';
-const driveRefreshToken = process.env.GOOGLE_DRIVE_REFRESH_TOKEN || '';
+const { SingletonDriveService } = require('../../googleDriveService');
+const uploadFile = require("./uploadFile");
 
 exports.updateAssignment = async (req, res) => {
     // const classId = req.params.classID;
@@ -128,37 +120,10 @@ exports.postFileToGoogleDrive = async (req, res) => {
         return res.status(500).json({ message: "Can not upload file!" });
     }
 
+    const folderName = String(assignmentResult.class.dataValues.className) + '_' + String(assignmentResult.dataValues.title);
+    const GoogleDriveService = SingletonDriveService.getInstance();
 
-    await (async () => {
-        const googleDriveService = new GoogleDriveService(driveClientId, driveClientSecret, driveRedirectUri, driveRefreshToken);
-        const finalPath = path.resolve(__dirname, '../../public/uploads/' + fileName);
-        // console.log(finalPath);
-
-        const folderName = String(assignmentResult.class.dataValues.className) + '_' + String(assignmentResult.dataValues.title);
-        try {
-            if (!fs.existsSync(finalPath)) {
-                throw new Error('File not found!');
-            }
-            let folder = await googleDriveService.searchFolder(folderName);
-            console.log(folder);
-
-            if (!folder) {
-                const result = await googleDriveService.createFolder(folderName);
-                folder = result.data;
-            }
-            console.log(folder);
-
-            await googleDriveService.saveFile(fileName, finalPath, 'application/octet-stream', folder.id);
-
-            console.info('File uploaded successfully!');
-            // Delete the file on the server
-            fs.unlinkSync(finalPath);
-
-        } catch (error) {
-            console.log(error);
-            res.status(500).json({ message: error });
-        }
-    })();
+    await uploadFile(GoogleDriveService, folderName, fileName);
 
     return res.status(200)
         .json({ message: "Upload assignment successfully!" });

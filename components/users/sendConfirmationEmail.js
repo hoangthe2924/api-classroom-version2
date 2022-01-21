@@ -7,7 +7,7 @@ exports.sendConfirmation = async (email) => {
         { email: email },
         process.env.JWT_SECRET);
 
-    const link = process.env.FRONT_URL + `confirm/${token}`;
+    const link = process.env.FRONT_URL + `/confirm/${token}`;
   
     let transporter = nodemailer.createTransport({
       // config mail server
