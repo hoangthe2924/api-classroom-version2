@@ -1,5 +1,5 @@
 # api-classroom-version2
-This repository is version 2 of my project in Advanced Web Development course. You can see it [here](https://github.com/hoangthe2924/classroom-api). In this version, we add Assignment Tab and allow student upload their assignments to host's drive.
+This repository is the 2nd version of my project in Advanced Web Development course. You can see it [here](https://github.com/hoangthe2924/classroom-api). In this version, we add Assignment Tab and allow student upload their assignments to host's drive.
 
 ## Tutorial:
 
